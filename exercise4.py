@@ -1,5 +1,7 @@
 import tensorflow as tf
+import numpy as np
 import tensorflow_datasets as tfds
+from datasets import load_dataset
 from base_exercise import BaseExercise
 
 class Exercise4(BaseExercise):
@@ -22,17 +24,39 @@ class Exercise4(BaseExercise):
         """
         print("Loading EuroSAT dataset...")
 
-        train_ds, test_ds = tfds.load(
-            "eurosat/rgb",
-            split=["train[:2000]", "train[2000:2500]"],
-            as_supervised=True,
-            shuffle_files=False
-        )
+        # Load the dataset split without shuffling to match assignment requirements[cite: 3]
+        dataset = load_dataset("blanchon/EuroSAT_RGB", split="train")
 
-        self.train_ds = train_ds
-        self.test_ds = test_ds
+        # Select the first 2000 for training and the next 500 for testing[cite: 3]
+        train_data = dataset.select(range(2000))
+        test_data = dataset.select(range(2000, 2500))
 
-        print("Dataset loaded!")
+        # Convert to numpy arrays for smooth pipeline creation
+        X_train = np.array([np.array(img) for img in train_data["image"]])
+        y_train = np.array(train_data["label"])
+
+        X_test = np.array([np.array(img) for img in test_data["image"]])
+        y_test = np.array(test_data["label"])
+
+        # Create TensorFlow datasets from tensors
+        self.train_ds = tf.data.Dataset.from_tensor_slices((X_train, y_train))
+        self.test_ds = tf.data.Dataset.from_tensor_slices((X_test, y_test))
+
+        print("Data loaded")
+
+
+       # Had to load the dataset locally, since I was not able to connect to the tfds server.
+       # train_ds, test_ds = tfds.load(
+       #     "eurosat/rgb",
+       #     split=["train[:2000]", "train[2000:2500]"],
+       #     as_supervised=True,
+       #     shuffle_files=False
+       # )
+
+       # self.train_ds = train_ds
+       # self.test_ds = test_ds
+
+        #print("Dataset loaded!")
 
     def preprocess(self, image, label):
         """

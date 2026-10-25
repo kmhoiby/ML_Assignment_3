@@ -8,9 +8,9 @@ from exercise6 import Exercise6
 
 if __name__ == "__main__":
 
-    #Exercise1().run()
+    Exercise1().run()
     #Exercise2().run()
     #Exercise3().run()
-    Exercise4().run()
+    #Exercise4().run()
     #Exercise5().run()
     #Exercise6().run()
